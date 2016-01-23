@@ -1,0 +1,3 @@
+*.pyc
+igconnect/settings.py
+media/documents/*
