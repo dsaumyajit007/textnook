@@ -1,0 +1,38 @@
+
+{% extends 'base/base.html' %}
+{% load staticfiles %}
+{% block title %}
+Projects
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+Currently there are {{projects|length}} projects listed. You can browse through them or add your own by clicking <a href="addProject/">here</a>
+<div class='row'>
+{% for project in projects %}
+
+	<div class="card blue-grey darken-1 col s4 offset-s1">
+		<div class="card-content white-text">
+			<h5>{{project.projectName}} by {{project.user.username}}</h5>
+			<p>{{project.projectDescription}}</p>
+
+			{% if project.skillList|length > 0 %}
+			<span class="card-title">Skills</span>
+				{% for skill in project.skillList %}
+					<h6>{{skill.skillName}}</h6>
+
+				{% endfor %}
+
+			{%endif %}
+		</div>
+		<div class="card-action">
+			<button projectId={{project.id}} class="btn waves-effect waves-light viewProject"  type="button">View Project</button>
+		</div>
+	</div>
+
+	{% endfor %}
+</div>
+
+<script type="text/javascript" src = "{% static 'js/dashboard/main.js' %}"></script>
+
+{% endblock%}

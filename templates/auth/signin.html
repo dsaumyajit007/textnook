@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+{% block title %}
+Login - Textnook Admin
+{% endblock %}
+
+{% block content %}
+{% if error  %}
+  <div class="chip">
+    <div class = "material-icons">error_outline</div>{{error}}
+    <i class="material-icons">close</i>
+  </div>
+{% endif %}
+<div class = "row">
+	<form class = "col s12" action = "{% url 'auth:signin' %}" method = "post">
+		{% csrf_token %}
+		<div class = "row">
+			<div class="input-field col s4">
+				<input type="text" class="validate" name = "username" required="">
+				<label for="first_name">Username</label>
+			</div>
+		</div>
+		<div class = "row">
+			<div class="input-field col s4">
+				<input type="password" class="validate" name = "password" required="">
+				<label for="first_name">password</label>
+			</div>
+		</div>
+		<div class = "row">
+			<div class="input-field col s6">
+				<input type="submit" class="validate btn green darken-4" name = "Sign up">
+			</div>
+		</div>
+	</form>
+</div>
+<div class = "row">
+	<a href = "{% url 'auth:signup'%}">Signup!</a>
+</div>
+{% endblock %}
