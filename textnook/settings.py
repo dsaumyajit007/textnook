@@ -38,9 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'auth',
-    'djangotoolbox',
-    'learn'
+    'learn',
+    'authentication',
 )
 
 
@@ -63,14 +62,14 @@ WSGI_APPLICATION = 'textnook.wsgi.application'
 # Database Settings
 
 USERNAME_DB = 'root' #username for your database
-PASSWORD_DB = '' #password for your database
+PASSWORD_DB = 'root' #password for your database
 DATABASES = {
     'default': {
-    'ENGINE': 'django_mongodb_engine',
+    'ENGINE': 'django.db.backends.mysql',
     'NAME': 'textnook_db',
     'USER':USERNAME_DB,
     'PASSWORD':PASSWORD_DB,
-    'HOST' : '127.0.0.1',
+    'HOST' : 'localhost',
     'PORT' : '',
 
     }
@@ -89,8 +88,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-#TEMPLATE_DIRS = ('./templates',)
-#TEMPLATE_LOADERS=('django.template.loaders.filesystem.Loader')
+TEMPLATE_DIRS = ('./templates',)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 

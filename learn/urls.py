@@ -2,11 +2,9 @@ from django.conf.urls import url
 
 from . import views
 
-app_name = 'learn'
+app_name = 'machine'
 
 urlpatterns = [
 	url(r'^$',views.index,name='index'),
-    url(r'^/$', views.signin, name='signin'),
-    url(r'^signup/$',views.signup,name='signup'),
-    url(r'^signout/$',views.signout,name='logout'),
-]
+	url(r'^upload/$',views.upload_document,name='upload_document'),
+ ]

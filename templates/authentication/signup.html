@@ -11,7 +11,7 @@ Signup - Textnook Admin
   </div>
 {% endif %}
 <div class = "row">
-	<form class = "col s12" action = "{% url 'auth:signup' %}" method = "post">
+	<form class = "col s12" action = "{% url 'authentication:signup' %}" method = "post">
 		{% csrf_token %}
 		<div class = "row">
 			<div class="input-field col s4">
