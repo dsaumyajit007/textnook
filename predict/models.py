@@ -22,7 +22,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Create your models here.
 def predict_category_subcategory(book_name):
-	data_set1 = pandas.Series(book_name)
+	data_set1 = pandas.Series(book_name.encode('ascii'))
 
     #Data Preprocessing
 	data_set1 = data_set1.dropna(axis=0,how='any')
