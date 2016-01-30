@@ -58,7 +58,8 @@ class Prediction(models.Model):
     book_name=models.CharField(max_length=512)
     category_name=models.CharField(max_length=128,blank=True)
     subcategory_name=models.CharField(max_length=128,blank=True)
-    	
+    is_added = models.CharField(max_length=10,blank=True)
+
     def save(self, *args, **kwargs):
    		print "was called"
    		[predicted_category,predicted_subcategory]=predict_category_subcategory(self.book_name)
@@ -73,3 +74,11 @@ class Prediction(models.Model):
         return self.book_name + " : "+self.category_name+" : "+self.subcategory_name 
     
 
+class Document(models.Model) :
+    document = models.FileField(upload_to='documents')
+    
+    def __str__(self):
+        return self.document.name
+
+
+    
