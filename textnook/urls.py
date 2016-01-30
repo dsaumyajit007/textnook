@@ -5,10 +5,11 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-   	url(r'^', include(admin.site.urls)),
+   	
     url(r'^admin/', include(admin.site.urls)),
     url(r'^authentication/',include('authentication.urls',namespace='authentication')),
     url(r'^learn/',include('learn.urls',namespace='learn')),
+    url(r'^predict/',include('predict.urls',namespace='predict')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT}),
 )

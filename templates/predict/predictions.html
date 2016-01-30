@@ -1,0 +1,53 @@
+{% extends 'base/base.html' %}
+{% block title %}
+Predictions
+{% endblock %}
+{% load staticfiles %}
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		
+		
+			<label>Predictions</label>
+			<table id = "predictions_table">
+			{% csrf_token %}
+				<thead>
+					<th>Book Name</th>
+					<th>Category</th>
+					<th>Subcategory</th>
+					<th>Train</th>
+				</thead>
+				<tbody>
+					
+					{% for prediction in predictions %}
+					<tr>
+						<td>{{prediction.book_name}}</td>
+						<td>{{prediction.category_name}}</td>
+						<td>{{prediction.subcategory_name}}</td>
+						<td> <div class="switch">
+							<label>
+								Don't Add
+								
+								<input type="checkbox" {% if prediction.is_added == "1" %} checked disabled {% endif %} prediction="{{prediction.id}}"/>
+								<span class="lever"></span>
+								Add
+							</label>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		
+	</div>
+	<button class="btn" id="add_predictions">Train</button>
+
+	<div class="train_loader progress" >
+      <div class="indeterminate"></div>
+  </div>
+</div>
+
+
+
+
+{% endblock %}

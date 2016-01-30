@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Create your models here.
 
 
-def train_dataset():
+def train_dataset_from_admin_upload():
     #Data input
     data_set = pandas.DataFrame(list(Book.objects.all().values('book_name', 'category_name', 'subcategory_name')))
 
@@ -107,7 +107,7 @@ class Document(models.Model):
     def save(self, *args, **kwargs):
         super(Document,self).save(*args, **kwargs)
         add_book_from_document(self.document.path)
-        train_dataset()
+        train_dataset_from_admin_upload()
 
     def __str__(self):
         return self.document.name

@@ -1,13 +1,20 @@
 {% extends 'base/base.html' %}
 {% load staticfiles %}
 {% block title %}
-Upload
+Upload Training Set
 {% endblock %}
 
 {% block content %}
 {% if error  %}
 <div class="chip">
 	<div class = "material-icons">error_outline</div>{{error}}
+	<i class="material-icons">close</i>
+</div>
+{% endif %}
+
+{% if success  %}
+<div class="chip">
+	<div class = "material-icons">error_outline</div>{{success}}
 	<i class="material-icons">close</i>
 </div>
 {% endif %}

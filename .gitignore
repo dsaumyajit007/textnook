@@ -1,3 +1,4 @@
 *.pyc
 textnook/settings.py
 media/documents/*
+learners/*
