@@ -23,6 +23,8 @@ from sklearn import metrics
 from sklearn.externals import joblib
 import numpy as np
 import os
+import math
+from threading import Thread
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -98,11 +100,9 @@ def train_dataset_from_predictions():
 
 def predict_category_subcategory(book_name):
 	data_set1 = pandas.Series(book_name.encode('ascii'))
-
     #Data Preprocessing
 	data_set1 = data_set1.dropna(axis=0,how='any')
 	data_set1 = data_set1.str.lower()
-
     #Manual removal List
 	remove_list = ['edition','ed','edn', 'vol' , 'vol.' , '-' ,'i']
 
@@ -114,18 +114,56 @@ def predict_category_subcategory(book_name):
 	data_set1 = data_set1.apply(lambda x :re.sub('[^A-Za-z0-9]+', ' ', x))
     #data_set['Category ID'] = data_set['Category ID']+"|"+data_set['Subcategory ID']
 
-
     #Stemming the book titles
 	stemmer = LancasterStemmer()
 	data_set1[0]=" ".join([stemmer.stem(i) for i in  data_set1[0].split()])
-
 	clf = joblib.load(os.path.join(BASE_DIR+"/learners/",'category_predict.pkl'))
+	
 	ans = clf.predict(data_set1)
 	sub_clf = joblib.load(os.path.join(BASE_DIR+"/learners/",'subcategory_predict.pkl'))
 	sub_ans = sub_clf.predict(data_set1)
 	return [ans[0],sub_ans[0]]
 
+
+
+
+def predict_thread(book_names,low,high):
+	c = 0
+	
+	print "booknamelength",len(book_names),"\n"
+	result = []
+	for book_name in book_names : 
+		
+		[predicted_category,predicted_subcategory]=predict_category_subcategory(book_name)
+		print book_name + predicted_category + predicted_subcategory+"\n"
+		prediction = Prediction(book_name = book_name,category_name = predicted_category,subcategory_name = predicted_subcategory)
+		prediction.save()
+		# document.to_csv('out.csv',sep=',')
+		result.append({
+			'book_name':book_name,
+			'predicted_category' : predicted_category,
+			'predicted_subcategory' : predicted_subcategory})
+		c=c+1
+	print result
+	return result
+
+class ThreadWithReturnValue(Thread):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs, Verbose)
+        self._return = None
+    def run(self):
+        if self._Thread__target is not None:
+            self._return = self._Thread__target(*self._Thread__args,
+                                                **self._Thread__kwargs)
+    def join(self):
+        Thread.join(self)
+        return self._return
+
+
+
 def handle_uploaded_file(request,file):
+	
 	if not request.user.is_authenticated() or not request.user.is_active : 
 		return redirect('/authentication/')
 
@@ -136,22 +174,40 @@ def handle_uploaded_file(request,file):
 	if 'Title' not in document :
 		return 'error'
 	book_names = document['Title']
-	c = 0
 	document['Category'] = document['Title']
-
 	document['Subcategory'] = document['Title']
+	threads = []
+	num_threads = 10.0 #please keep float
+	low = 0
+	high = 0
+	interval_length = int(math.ceil(len(book_names)/num_threads))
+	i = 0
+	print "interval_length",interval_length,"\n"
+	while True :
+		low = i*interval_length
+		high = low + interval_length
+		if  high > len(book_names) :
+			high = len(book_names)
+			break
+		i = i+1
+		print "low",low,"high",high,"\n"
+		processThread = ThreadWithReturnValue(target=predict_thread, args=(book_names[low:high],low,high,))
+		processThread.start();
+		threads.append(processThread)
 
-	for book_name in book_names : 
-		print book_name
-		[predicted_category,predicted_subcategory]=predict_category_subcategory(book_name)
-		document['Category'][c] = predicted_category
-		document['Subcategory'][c] = predicted_subcategory
-		c = c+1;
-		print "doing"
+	idx = 0
+	for thread in threads :
+		returned_value =  thread.join()
+		for ret_val in returned_value : 
+			document['Category'][idx] = ret_val['predicted_category']
+			document['Subcategory'][idx] = ret_val['predicted_subcategory']
+			idx = idx+1
+			#print returned_value
 
-		prediction = Prediction(book_name = book_name,category_name = predicted_category,subcategory_name = predicted_subcategory)
-		prediction.save()
-		document.to_csv('out.csv',sep=',')
+	
+	print document
+	document.to_csv('out.csv')
+
 
  
 
@@ -169,8 +225,10 @@ def upload_document(request):
 			new_document.save();
 			print "Saved"
 			if handle_uploaded_file(request,new_document.document.path) == 'error' :
+				print "error"
 				return render(request,'predict/uploaddocument.html',{'error':'Upload was unsuccessful. Please try again'})
 			else :
+				print "no error"
 				return render(request,'predict/uploaddocument.html',{'success':'File successfully saved'})
 		
 	else:
